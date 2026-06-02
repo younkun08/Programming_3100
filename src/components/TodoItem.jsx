@@ -40,7 +40,7 @@ export default function TodoItem({ todo, toggleTodo, deleteTodo, editTodo, pinTo
                 />
             }
 
-            <span>날짜</span>
+            <span>{new Date(todo.id).toLocaleString()}</span>
             <Button className='todo__button todo__button--edit'
                 onClick={handleEditText}>{!isEditing ? "✏️" : "💾"}</Button>
             <Button
