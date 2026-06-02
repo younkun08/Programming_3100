@@ -85,11 +85,6 @@ function TodoListApp() {
         )
     }
     const sortedTodos = [...todos].sort((a,b) => Number(!!b.isPinned) - Number(!!a.isPinned));
-    return (
-        <div className="todo">
-            <TodoHeader />
-            <TodoAdder addTodo={addTodo} />
-            <TodoList todos={sortedTodos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} pinTodo={pinTodo} />
 
     const [bgColor, setBgColor] = useState(() => {
         return localStorage.getItem("bgColor") || "#ffffff";
@@ -106,7 +101,7 @@ function TodoListApp() {
     return (
         <div className="todo">
             <TodoHeader changeBgColor={changeBgColor} currentBgColor={bgColor} />
-            <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} />
+            <TodoList todos={sortedTodos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} pinTodo={pinTodo} />
             <TodoAdder addTodo={addTodo} />
         </div>
     )
