@@ -8,6 +8,7 @@ import TodoHeader from './components/TodoHeader.jsx';
 import Checkbox from './components/Checkbox.jsx';
 import TodoAdder from './components/TodoAdder.jsx'
 import TodoList from './components/TodoList.jsx'
+import { TodoProgress } from './components/TodoProgress.jsx';
 
 
 class Todo {
@@ -101,6 +102,7 @@ function TodoListApp() {
     return (
         <div className="todo">
             <TodoHeader changeBgColor={changeBgColor} currentBgColor={bgColor} />
+            <TodoProgress todos={todos} />
             <TodoList todos={sortedTodos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} pinTodo={pinTodo} />
             <TodoAdder addTodo={addTodo} />
         </div>

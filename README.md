@@ -50,6 +50,7 @@ npm create vite@latest .
     <Link to="/"></Link>
 ```
 - `useNavigate()`
+- 3102 김민재 3-4	진행률(완료/전체)	★★	진행률(완료/전체) 	 filter(), useMemo, 비율 계산, progress bar
 - 3100 임O훈 1-1	날짜 표시?	★	Date, 컴포넌트 렌더링
 - 3108 윤건 2-11 상단고정(pin) ★★ boolean 값, 정렬 로직 
 - 3105 김주람   1-4	font	★	CSS, Google Fonts, theme state
