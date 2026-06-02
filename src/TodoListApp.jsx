@@ -12,9 +12,10 @@ import TodoList from './components/TodoList.jsx'
 
 class Todo {
     constructor(text) {
-        this.id = Date.now(); // 할일 고유 id 
-        this.text = text; // 할일 내용
-        this.isCompleted = false; //완료 여부
+        this.id = Date.now();       //할일 고유 id: 만든시각. new Date().getTime()
+        this.text = text;           //할일 내용
+        this.isCompleted = false;   //완료 여부: 기본값 false
+        this.isPinned = false;
     }
 }
 
@@ -76,6 +77,19 @@ function TodoListApp() {
             (todos.map((todo) => todo.id === id ? { ...todo, text: newText } : todo))
         )
     }
+    const pinTodo = (id) => {
+        setTodos((todos) =>
+            todos.map((todo) =>
+                todo.id === id ? {...todo, isPinned: !todo.isPinned} : todo
+            )
+        )
+    }
+    const sortedTodos = [...todos].sort((a,b) => Number(!!b.isPinned) - Number(!!a.isPinned));
+    return (
+        <div className="todo">
+            <TodoHeader />
+            <TodoAdder addTodo={addTodo} />
+            <TodoList todos={sortedTodos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} pinTodo={pinTodo} />
 
     const [bgColor, setBgColor] = useState(() => {
         return localStorage.getItem("bgColor") || "#ffffff";
