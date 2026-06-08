@@ -108,7 +108,7 @@ function TodoListApp() {
             )
         )
     }
-    
+
     const [bgColor, setBgColor] = useState(() => {
         return localStorage.getItem("bgColor") || "#ffffff";
     });
@@ -125,7 +125,7 @@ function TodoListApp() {
         todo.text.includes(keyword)
     );
     let sortedTodos = filteredTodos
-    let sortedTodos = [...todos].sort((a, b) => (a.priority ?? 3) - (b.priority ?? 3));
+    sortedTodos = [...sortedTodos].sort((a, b) => (a.priority ?? 3) - (b.priority ?? 3));
     sortedTodos = [...sortedTodos].sort((a,b) => Number(!!b.isPinned) - Number(!!a.isPinned));
 
     return (
@@ -147,7 +147,7 @@ function TodoListApp() {
                 />
             </div>
             <TodoProgress todos={todos} />
-            <TodoList todos={filteredTodos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} pinTodo={pinTodo} />
+            <TodoList todos={sortedTodos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} pinTodo={pinTodo} />
             <TodoAdder addTodo={addTodo} />
         </div>
     )

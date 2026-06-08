@@ -25,7 +25,7 @@ export default function TodoItem({ todo, toggleTodo, deleteTodo, editTodo, pinTo
                     id={todo.id}
                     checked={todo.isCompleted}
                     onChange={() => toggleTodo(todo.id)}
-                >[{todo.priority ?? 3}순위] {todo.text}</Checkbox>
+                >[{todo.priority ?? 3}순위] {todo.text} {todo.isPinned && "📍"}</Checkbox>
             }
             {/* 수정중이면 input */}
             {isEditing &&
