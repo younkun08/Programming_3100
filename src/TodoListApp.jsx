@@ -1,23 +1,19 @@
 import { useEffect, useState } from 'react';
-
 import './todolist.css'
-import TodoItem from './components/TodoItem.jsx'
-import Button from './components/Button';
-import TodoItemEmpty from './components/TodoItemEmpty.jsx'
-import TodoHeader from './components/TodoHeader.jsx';
-import Checkbox from './components/Checkbox.jsx';
+import TodoHeader from './components/TodoHeader.jsx'
 import TodoAdder from './components/TodoAdder.jsx'
 import TodoList from './components/TodoList.jsx'
 import { TodoProgress } from './components/TodoProgress.jsx';
 
 
 class Todo {
-    constructor(text, priority) {
+    constructor(text) {
         this.id = Date.now();       //할일 고유 id: 만든시각. new Date().getTime()
         this.text = text;           //할일 내용
-        this.priority = priority;   //우선순위: 낮은 숫자가 먼저
         this.isCompleted = false;   //완료 여부: 기본값 false
         this.isPinned = false;
+        this.priority = priority;   //우선순위: 낮은 숫자가 먼저 
+        this.completedAt = null;
     }
 }
 
@@ -35,7 +31,30 @@ function TodoListApp() {
     }
 
     const [todos, setTodos] = useState(initTodos); //할일 목록: 기본값 빈 리스트
-    const sortedTodos = [...todos].sort((a, b) => (a.priority ?? 3) - (b.priority ?? 3));
+    const [keyword, setKeyword] = useState('');
+
+    useEffect(() => {
+        localStorage.setItem(TODOS_STORAGE_KEY, JSON.stringify(todos));
+    }, [todos]);    
+
+    useEffect(() => {
+        const cleanExpiredTodos = () => {
+            const now = Date.now();
+            const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+            setTodos((prevTodos) => 
+                prevTodos.filter((todo) => {
+                    if (!todo.isCompleted) return true;
+                    return now - todo.completedAt < TWENTY_FOUR_HOURS;
+                })
+            );
+        };
+
+        cleanExpiredTodos();
+        const intervalId = setInterval(cleanExpiredTodos, 60 * 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
 
     //todos가 바뀌면, LocalStroage에 저장하자 
     // [](mount할 때 한번 실행), [새앤]에 있는 state가 바뀌면, 그 앞 함수 정의를 호출하자
@@ -51,17 +70,23 @@ function TodoListApp() {
         //이전 todos에 추가하자
         new Todo(text, priority)
     ]);
-
     // const addTodo = (text) => setTodos((todos) => [...todos, new Todo(text)]);
-    const toggleTodo = (id) => {
-        // todos에서 그 id에 해당하는 todo 찾고, 그 todo의 isCompleted를 true -> false, false -> true
-        setTodos((todos) =>
-            todos.map((todo) =>
-                todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
-            )
-        )
-    };
 
+    const toggleTodo = (id) => {
+        setTodos((prevTodos) =>
+            prevTodos.map((todo) => {
+                if (todo.id === id) {
+                    const nextCompleted = !todo.isCompleted;
+                    return {
+                        ...todo,
+                        isCompleted: nextCompleted,
+                        completedAt: nextCompleted ? Date.now() : null
+                    };
+                }
+                return todo;
+            })
+        );
+    };
     const deleteTodo = (id) => {
         //id가 같지 않은 todo만 복사하자 (filter())
         setTodos((todos) =>
@@ -83,8 +108,7 @@ function TodoListApp() {
             )
         )
     }
-    // const sortedTodos = [...todos].sort((a,b) => Number(!!b.isPinned) - Number(!!a.isPinned));
-
+    
     const [bgColor, setBgColor] = useState(() => {
         return localStorage.getItem("bgColor") || "#ffffff";
     });
@@ -96,12 +120,34 @@ function TodoListApp() {
     useEffect(() => {
         document.body.style.backgroundColor = bgColor;
     }, []);
+  
+    const filteredTodos = todos.filter((todo) =>
+        todo.text.includes(keyword)
+    );
+    let sortedTodos = filteredTodos
+    let sortedTodos = [...todos].sort((a, b) => (a.priority ?? 3) - (b.priority ?? 3));
+    sortedTodos = [...sortedTodos].sort((a,b) => Number(!!b.isPinned) - Number(!!a.isPinned));
 
     return (
         <div className="todo">
             <TodoHeader changeBgColor={changeBgColor} currentBgColor={bgColor} />
+            <div style={{ margin: '10px 0', textAlign: 'center' }}>
+                <input
+                    type="text"
+                    placeholder="할 일을 검색하세요"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    style={{ 
+                        padding: '8px', 
+                        width: '90%', 
+                        boxSizing: 'border-box', 
+                        border: '1px solid #ccc', 
+                        borderRadius: '4px' 
+                    }}
+                />
+            </div>
             <TodoProgress todos={todos} />
-            <TodoList todos={sortedTodos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} pinTodo={pinTodo} />
+            <TodoList todos={filteredTodos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} editTodo={editTodo} pinTodo={pinTodo} />
             <TodoAdder addTodo={addTodo} />
         </div>
     )
