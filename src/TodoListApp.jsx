@@ -12,9 +12,10 @@ import { TodoProgress } from './components/TodoProgress.jsx';
 
 
 class Todo {
-    constructor(text) {
+    constructor(text, priority) {
         this.id = Date.now();       //할일 고유 id: 만든시각. new Date().getTime()
         this.text = text;           //할일 내용
+        this.priority = priority;   //우선순위: 낮은 숫자가 먼저
         this.isCompleted = false;   //완료 여부: 기본값 false
         this.isPinned = false;
     }
@@ -33,11 +34,8 @@ function TodoListApp() {
         //가져온게 있으면 문자열로 되어 있는 것을 json으로 파싱(해석)하면 객체로 가져올 수 있고, 없으면 빈 리스트
     }
 
-    /* 이런 형식으로 로컬스토리지에 저장됨
-        "[{id: 178278, isCompleted: false, text:"가입"}, {}, {}]"
-    */
-
-    const [todos, setTodos] = useState(initTodos); // 할일 목록 : 기본값 빈 리스트
+    const [todos, setTodos] = useState(initTodos); //할일 목록: 기본값 빈 리스트
+    const sortedTodos = [...todos].sort((a, b) => (a.priority ?? 3) - (b.priority ?? 3));
 
     //todos가 바뀌면, LocalStroage에 저장하자 
     // [](mount할 때 한번 실행), [새앤]에 있는 state가 바뀌면, 그 앞 함수 정의를 호출하자
@@ -46,12 +44,12 @@ function TodoListApp() {
     }, [todos]);
 
 
-    const addTodo = (text) => setTodos((todos) => [
+    const addTodo = (text, priority) => setTodos((todos) => [
+        //이전 todos 복사하자
         ...todos,
-        // 이전 todos 복사하자
-        // newTodo 만들자
-        // 이전 todos에 추가하자
-        new Todo(text)
+        //newTodo 만들자
+        //이전 todos에 추가하자
+        new Todo(text, priority)
     ]);
 
     // const addTodo = (text) => setTodos((todos) => [...todos, new Todo(text)]);
@@ -85,7 +83,7 @@ function TodoListApp() {
             )
         )
     }
-    const sortedTodos = [...todos].sort((a,b) => Number(!!b.isPinned) - Number(!!a.isPinned));
+    // const sortedTodos = [...todos].sort((a,b) => Number(!!b.isPinned) - Number(!!a.isPinned));
 
     const [bgColor, setBgColor] = useState(() => {
         return localStorage.getItem("bgColor") || "#ffffff";
